@@ -34,7 +34,7 @@ loop.run_until_complete(main())
 > CallbackQuery Listener Example
 
 ```python
-@bot.callback_query_handler()
+@bot.callback_query_handler(func = lambda quey: True)
 async def _(query: types.CallbackQuery):
     if query.data == "name":
         msg = await listener.listen_to(
