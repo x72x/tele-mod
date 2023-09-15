@@ -31,5 +31,31 @@ async def main():
 loop.run_until_complete(main())
 ```
 
+> CallbackQuery Listener Example
+
+```python
+@bot.callback_query_handler()
+async def _(query: types.CallbackQuery):
+    if query.data == "name":
+        msg = await listener.listen_to(
+            query,
+            "What's your name?",
+            filters=["text"]
+        )
+        return await bot.reply_to(msg, f"Your name is {msg.text}")
+```
+
+> Simple usage example
+
+```python
+msg = await listener.listen(
+    chat_id=chat_id,
+    text="What's your name",
+    from_id=from_id,
+    filters=["text", "photo"]
+)
+print(msg)
+```
+
 ## Community
 - Join To Our Channel: https://t.me/Y88F8
