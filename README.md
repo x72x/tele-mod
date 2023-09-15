@@ -57,5 +57,19 @@ msg = await listener.listen(
 print(msg)
 ```
 
+> Time out example
+
+```python
+@bot.message_handler(commands=["start"])
+async def start_handler(message: types.Message):
+    try:
+        msg = await listener.listen_to(message, "What's your name?", timeout=10)
+    except TimeOut:
+        msg = None
+        await bot.reply_to(message, "Time Out")
+    if msg:
+        return await bot.reply_to(msg, f"Hi {msg.text}")
+```
+
 ## Community
 - Join To Our Channel: https://t.me/Y88F8
