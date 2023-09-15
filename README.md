@@ -18,7 +18,7 @@ listener = Listener(bot=bot, loop=loop)
 
 @bot.message_handler(commands=["start"])
 async def _(message: types.Message):
-    msg = await listener.listen_to(m=message, text="What's Your name?")
+    msg = await listener.listen_to(m=message, text="What's Your name?", filters=["text"])
     await bot.reply_to(msg, f"Your name is {msg.text}")
     # to delete question message
     # await bot.delete_message(chat_id=message.chat.id, message_id=msg.output.id)
@@ -63,7 +63,7 @@ print(msg)
 @bot.message_handler(commands=["start"])
 async def start_handler(message: types.Message):
     try:
-        msg = await listener.listen_to(message, "What's your name?", timeout=10)
+        msg = await listener.listen_to(message, "What's your name?", filters=["text"], timeout=10)
     except TimeOut:
         msg = None
         await bot.reply_to(message, "Time Out")
