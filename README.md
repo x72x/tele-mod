@@ -1,6 +1,6 @@
 ## Installing
 ```bash
-pip3 install -U telemod
+pip3 install -U tele-mod
 ```
 
 ## Telemod
