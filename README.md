@@ -18,7 +18,7 @@ listener = Listener(bot=bot, loop=loop)
 
 @bot.message_handler(commands=["start"])
 async def _(message: types.Message):
-    msg = await listener.listen_to(m=message, text="What's Your name?", filters=["text"])
+    msg = await listener.listen_to(m=message, text="What's Your name?")
     await bot.reply_to(msg, f"Your name is {msg.text}")
     # to delete question message
     # await bot.delete_message(chat_id=message.chat.id, message_id=msg.output.id)
@@ -34,7 +34,7 @@ loop.run_until_complete(main())
 > CallbackQuery Listener Example
 
 ```python
-@bot.callback_query_handler(func = lambda quey: True)
+@bot.callback_query_handler(func = lambda query: True)
 async def _(query: types.CallbackQuery):
     if query.data == "name":
         msg = await listener.listen_to(
@@ -63,12 +63,32 @@ print(msg)
 @bot.message_handler(commands=["start"])
 async def start_handler(message: types.Message):
     try:
-        msg = await listener.listen_to(message, "What's your name?", filters=["text"], timeout=10)
+        msg = await listener.listen_to(message, "What's your name?", timeout=10)
     except TimeOut:
         msg = None
         await bot.reply_to(message, "Time Out")
     if msg:
         return await bot.reply_to(msg, f"Hi {msg.text}")
+```
+
+> Filters type example
+
+```python
+@bot.message_handler(commands=["ask"], chat_types=["supergroup"])
+async def _(message: types.Message):
+    msg = await listener.listen(
+        chat_id=message.chat.id,
+        text="What's your name",
+        filters=["sender_chat", "text"],
+        filters_type=2
+    ) # will only listen to an message has "sender_chat" and "text" attribute
+    msg = await listener.listen(
+        chat_id=message.chat.id,
+        text="What's your name",
+        filters=["sender_chat", "text"],
+        filters_type=1
+    ) # will listen to any messgae has "sender_chat" or "text" attribute
+    return await bot.reply_to(msg, msg.text)
 ```
 
 ## Community
