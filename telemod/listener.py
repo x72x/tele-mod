@@ -17,8 +17,7 @@ _cache = {}
 
 available_filters = [
     "text", "document", "animation", "sticker", "photo", "video",
-    "contact", "location", "voice", "video_note", "venue", "dice",
-    "poll", "audio"
+    "contact", "location", "voice", "video_note", "venue", "dice", "audio"
 ]
 
 class Listener:
@@ -37,7 +36,7 @@ class Listener:
 
     async def start(self):
         def __():
-            self.bot.register_message_handler(self._handler)
+            self.bot.register_message_handler(self._handler, content_types=available_filters)
         self.loop.run_in_executor(None, __)
 
     async def listen(
