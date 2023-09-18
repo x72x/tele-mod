@@ -25,7 +25,6 @@ async def _(message: types.Message):
 
 async def main():
     print((await bot.get_me()).first_name)
-    await listener.start()
     await bot.infinity_polling(skip_pending=True)
 
 loop.run_until_complete(main())
