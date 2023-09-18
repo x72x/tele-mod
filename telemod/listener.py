@@ -4,7 +4,7 @@ from time import sleep
 from typing import List, Union
 from datetime import datetime, timedelta
 
-from telebot import types, async_telebot
+from telebot import types, async_telebot, asyncio_filters
 from telebot.handler_backends import ContinueHandling
 
 class TimeOut(Exception):
@@ -12,6 +12,7 @@ class TimeOut(Exception):
 
 class botAlreadyConnected(Exception):
     pass
+
 
 _cache = {}
 
@@ -34,9 +35,44 @@ class Listener:
         self.name = bot_id
         self.show_output = show_output
 
-    async def start(self):
+        class _is_db(asyncio_filters.SimpleCustomFilter):
+            key='_is_db'
+            @staticmethod
+            async def check(message: types.Message):
+                sender = message.sender_chat or message.from_user
+                chat_id = message.chat.id
+                __ = []
+                _o = False
+                for data in _cache[self.name]['list']:
+                    if (data['chat_id'] == chat_id) and (
+                        (data["from_id"] is None) or (isinstance(data["from_id"], list) and sender.id in data["from_id"]) or (
+                            isinstance(data["from_id"], int) and data["from_id"] == sender.id
+                        )
+                    ):
+                        if data["filters_type"] == 1:
+                            for _ in data["filters"]:
+                                if hasattr(message, _) and getattr(message, _):
+                                    __.append(_)
+                                    _o = True
+                                    break
+
+                        if data["filters_type"] == 2:
+                            for _ in data["filters"]:
+                                if hasattr(message, _) and getattr(message, _):
+                                    __.append(_)
+                            if __ == data["filters"]:
+                                _o = True
+
+                        if _o:
+                            if self.show_output:
+                                message.output = _cache[self.name][json.dumps(data, ensure_ascii=False)]
+                            _cache[self.name][json.dumps(data, ensure_ascii=False)]=message
+                            _cache[self.name]['list'].remove(data)
+                return _o
+
         def __():
-            self.bot.register_message_handler(self._handler, content_types=available_filters)
+            self.bot.register_message_handler(self._handler, content_types=available_filters, _is_db=True)
+            self.bot.add_custom_filter(_is_db())
         self.loop.run_in_executor(None, __)
 
     async def listen(
@@ -84,6 +120,9 @@ class Listener:
         }
         if data in _cache[self.name]['list']: _cache[self.name]['list'].remove(data)
         _cache[self.name]['list'].append(data)
+        if not chat_id in _cache[self.name]:
+            _cache[self.name][chat_id]=[]
+        _cache[self.name][chat_id].append(data)
         if text:
             m = await self.bot.send_message(
                 chat_id=chat_id,
@@ -122,32 +161,29 @@ class Listener:
         return await self.listen(chat_id=chat_id, from_id=from_id, text=text, reply_to_message_id=reply_to_message_id, *args, **kwargs)
 
     async def _handler(self, message: types.Message):
-            sender = message.sender_chat or message.from_user
-            chat_id = message.chat.id
-            __ = []
-            for data in _cache[self.name]['list']:
-                if (data['chat_id'] == chat_id) and (
-                    (data["from_id"] is None) or (isinstance(data["from_id"], list) and sender.id in data["from_id"]) or (
-                        isinstance(data["from_id"], int) and data["from_id"] == sender.id
-                    )
-                ):
-                    if data["filters_type"] == 1:
-                        for _ in data["filters"]:
-                            if hasattr(message, _) and getattr(message, _):
-                                __.append(_)
-                                break
-                        if not __:
-                            return False
+            # print("handler")
+            # sender = message.sender_chat or message.from_user
+            # chat_id = message.chat.id
+            # __ = []
+            # _o = False
+            # for data in _cache[self.name]['list']:
+            #     if (data['chat_id'] == chat_id) and (
+            #         (data["from_id"] is None) or (isinstance(data["from_id"], list) and sender.id in data["from_id"]) or (
+            #             isinstance(data["from_id"], int) and data["from_id"] == sender.id
+            #         )
+            #     ):
+            #         if data["filters_type"] == 1:
+            #             for _ in data["filters"]:
+            #                 if hasattr(message, _) and getattr(message, _):
+            #                     __.append(_)
+            #                     _o = True
+            #                     break
 
-                    if data["filters_type"] == 2:
-                        for _ in data["filters"]:
-                            if hasattr(message, _) and getattr(message, _):
-                                __.append(_)
-                        if __ != data["filters"]:
-                            return False
-
-                    if self.show_output:
-                        message.output = _cache[self.name][json.dumps(data, ensure_ascii=False)]
-                    _cache[self.name][json.dumps(data, ensure_ascii=False)]=message
-                    _cache[self.name]['list'].remove(data)
+            #         if data["filters_type"] == 2:
+            #             for _ in data["filters"]:
+            #                 if hasattr(message, _) and getattr(message, _):
+            #                     __.append(_)
+            #             if __ == data["filters"]:
+            #                 _o = True
+            #         if _o:
             return ContinueHandling()
