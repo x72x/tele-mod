@@ -10,7 +10,7 @@ from telebot.handler_backends import ContinueHandling
 class TimeOut(Exception):
     pass
 
-class botAlreadyConnected(Exception):
+class BotAlreadyConnected(Exception):
     pass
 
 
@@ -26,14 +26,15 @@ class Listener:
         super().__init__()
         bot_id = bot.token.split(":")[0]
         if bot_id in _cache:
-            raise botAlreadyConnected(f"Client [ {bot_id} ] Already connected")
+            raise BotAlreadyConnected(f"Bot [ {bot_id} ] Already connected")
 
         self.loop = loop
-        _cache[bot_id]={}
-        _cache[bot_id]['list']=[]
         self.bot = bot
         self.name = bot_id
         self.show_output = show_output
+
+        _cache[bot_id]={}
+        _cache[bot_id]['list']=[]
 
         class _is_db(asyncio_filters.SimpleCustomFilter):
             key='_is_db'
@@ -71,7 +72,7 @@ class Listener:
                 return _o
 
         def __():
-            self.bot.register_message_handler(self._handler, content_types=available_filters, _is_db=True)
+            self.bot.register_message_handler(self._handler, func= lambda message: True, _is_db=True)
             self.bot.add_custom_filter(_is_db())
         self.loop.run_in_executor(None, __)
 
@@ -120,9 +121,6 @@ class Listener:
         }
         if data in _cache[self.name]['list']: _cache[self.name]['list'].remove(data)
         _cache[self.name]['list'].append(data)
-        if not chat_id in _cache[self.name]:
-            _cache[self.name][chat_id]=[]
-        _cache[self.name][chat_id].append(data)
         if text:
             m = await self.bot.send_message(
                 chat_id=chat_id,
@@ -140,11 +138,14 @@ class Listener:
         _cache[self.name][json.dumps(data, ensure_ascii=False)]=m
         if timeout:
             stamp = (datetime.now() + timedelta(seconds=timeout))
+        else:
+            stamp = None
         def ___():
             while data in _cache[self.name]['list']:
-                if timeout:
-                    if datetime.now() > stamp:
-                        raise TimeOut("Time out error")
+                if (timeout) and (datetime.now() > stamp):
+                    del _cache[self.name][json.dumps(data, ensure_ascii=False)]
+                    _cache[self.name]['list'].remove(data)
+                    raise TimeOut("Time out error")
                 sleep(0)
             return _cache[self.name][json.dumps(data, ensure_ascii=False)]
         return await self.loop.run_in_executor(None, ___)
