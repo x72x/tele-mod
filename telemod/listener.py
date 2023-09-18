@@ -161,29 +161,4 @@ class Listener:
         return await self.listen(chat_id=chat_id, from_id=from_id, text=text, reply_to_message_id=reply_to_message_id, *args, **kwargs)
 
     async def _handler(self, message: types.Message):
-            # print("handler")
-            # sender = message.sender_chat or message.from_user
-            # chat_id = message.chat.id
-            # __ = []
-            # _o = False
-            # for data in _cache[self.name]['list']:
-            #     if (data['chat_id'] == chat_id) and (
-            #         (data["from_id"] is None) or (isinstance(data["from_id"], list) and sender.id in data["from_id"]) or (
-            #             isinstance(data["from_id"], int) and data["from_id"] == sender.id
-            #         )
-            #     ):
-            #         if data["filters_type"] == 1:
-            #             for _ in data["filters"]:
-            #                 if hasattr(message, _) and getattr(message, _):
-            #                     __.append(_)
-            #                     _o = True
-            #                     break
-
-            #         if data["filters_type"] == 2:
-            #             for _ in data["filters"]:
-            #                 if hasattr(message, _) and getattr(message, _):
-            #                     __.append(_)
-            #             if __ == data["filters"]:
-            #                 _o = True
-            #         if _o:
             return ContinueHandling()
