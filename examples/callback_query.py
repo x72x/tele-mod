@@ -35,7 +35,7 @@ async def callback_query(query: types.CallbackQuery):
 
 async def main():
     print((await bot.get_me()).first_name)
-    await listener.start()
+    # await listener.start()
     await bot.infinity_polling(skip_pending=True)
 
 loop.run_until_complete(main())
