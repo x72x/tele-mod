@@ -92,3 +92,6 @@ async def _(message: types.Message):
 
 ## Community
 - Join To Our Channel: https://t.me/Y88F8
+
+## Examples
+- https://github.com/x72x/tele-mod/tree/main/examples
