@@ -143,7 +143,7 @@ class Listener:
             return _cache[self.name][json.dumps(data, ensure_ascii=False)]
         return await self.loop.run_in_executor(None, ___)
 
-    async def listen_to(self, m: Union[types.CallbackQuery, types.Message], text : str, *args, **kwargs):
+    async def listen_to(self, m: Union[types.CallbackQuery, types.Message], text : str = None, *args, **kwargs):
         if isinstance(m, types.CallbackQuery):
             chat_id = m.message.chat.id
             from_id = m.from_user.id
