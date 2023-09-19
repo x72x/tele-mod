@@ -147,12 +147,10 @@ class Listener:
         if isinstance(m, types.CallbackQuery):
             chat_id = m.message.chat.id
             from_id = m.from_user.id
-            reply_to_message_id = None
         elif isinstance(m, types.Message):
             chat_id = m.chat.id
             from_id = (m.from_user or m.sender_chat).id
-            reply_to_message_id = m.id
-        return await self.listen(chat_id=chat_id, from_id=from_id, text=text, reply_to_message_id=reply_to_message_id, *args, **kwargs)
+        return await self.listen(chat_id=chat_id, from_id=from_id, text=text, *args, **kwargs)
 
     async def _handler(self, message: types.Message):
             return ContinueHandling()
