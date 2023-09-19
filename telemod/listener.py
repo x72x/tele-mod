@@ -10,10 +10,6 @@ from telebot.handler_backends import ContinueHandling
 class TimeOut(Exception):
     pass
 
-class BotAlreadyConnected(Exception):
-    pass
-
-
 _cache = {}
 
 available_filters = [
@@ -25,9 +21,6 @@ class Listener:
     def __init__(self, bot: async_telebot.AsyncTeleBot, loop: asyncio.AbstractEventLoop, show_output: bool = True) -> None:
         super().__init__()
         bot_id = bot.token.split(":")[0]
-        if bot_id in _cache:
-            raise BotAlreadyConnected(f"Bot [ {bot_id} ] Already connected")
-
         self.loop = loop
         self.bot = bot
         self.name = bot_id
