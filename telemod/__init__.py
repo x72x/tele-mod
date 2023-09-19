@@ -1,1 +1,1 @@
-from .listener import Listener, TimeOut, BotAlreadyConnected
+from .listener import Listener, TimeOut
