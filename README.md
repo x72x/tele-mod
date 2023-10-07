@@ -1,3 +1,6 @@
+## Badges
+- [![Downloads](https://static.pepy.tech/badge/tele-mod)](https://pepy.tech/project/tele-mod)
+
 ## Installing
 ```bash
 pip3 install -U tele-mod
